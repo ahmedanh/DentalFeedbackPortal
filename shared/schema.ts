@@ -10,8 +10,6 @@ export const doctors = pgTable("doctors", {
 
 export const feedback = pgTable("feedback", {
   id: serial("id").primaryKey(),
-  patientName: text("patient_name").notNull(),
-  patientEmail: text("patient_email").notNull(),
   doctorId: integer("doctor_id").notNull(),
   rating: integer("rating").notNull(),
   comments: text("comments").notNull(),
@@ -20,7 +18,6 @@ export const feedback = pgTable("feedback", {
 export const insertFeedbackSchema = createInsertSchema(feedback)
   .extend({
     rating: z.number().min(1).max(5),
-    patientEmail: z.string().email(),
     comments: z.string().min(10),
   });
 

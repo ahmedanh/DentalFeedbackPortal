@@ -6,9 +6,8 @@ import { insertFeedbackSchema, type Doctor } from "@shared/schema";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Star } from "lucide-react";
@@ -19,15 +18,13 @@ export default function Home() {
   const form = useForm({
     resolver: zodResolver(insertFeedbackSchema),
     defaultValues: {
-      patientName: "",
-      patientEmail: "",
       doctorId: 0,
       rating: 0,
       comments: "",
     },
   });
 
-  const { data: doctors, isLoading: loadingDoctors } = useQuery<Doctor[]>({
+  const { data: doctors } = useQuery<Doctor[]>({
     queryKey: ["/api/doctors"],
   });
 
@@ -58,40 +55,12 @@ export default function Home() {
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl font-bold text-primary">
-              Dental Hospital Feedback
+              Anonymous Dental Hospital Feedback
             </CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={onSubmit} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="patientName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Your Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="John Doe" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="patientEmail"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="you@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <FormField
                   control={form.control}
                   name="doctorId"
@@ -152,7 +121,7 @@ export default function Home() {
                       <FormLabel>Comments</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Please share your experience..."
+                          placeholder="Please share your experience anonymously..."
                           className="h-32"
                           {...field}
                         />
@@ -167,7 +136,7 @@ export default function Home() {
                   className="w-full"
                   disabled={mutation.isPending}
                 >
-                  {mutation.isPending ? "Submitting..." : "Submit Feedback"}
+                  {mutation.isPending ? "Submitting..." : "Submit Anonymous Feedback"}
                 </Button>
               </form>
             </Form>
