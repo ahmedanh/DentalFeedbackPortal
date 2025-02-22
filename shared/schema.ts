@@ -14,16 +14,17 @@ export const feedback = pgTable("feedback", {
   generalExperience: text("general_experience").notNull(),
   bookingRating: text("booking_rating").notNull(),
   careQuality: text("care_quality").notNull(),
-  adequateExplanation: boolean("adequate_explanation").notNull(),
-  comfortableTreatment: boolean("comfortable_treatment").notNull(),
-  costInformed: boolean("cost_informed").notNull(),
-  aftercareInstructions: boolean("aftercare_instructions").notNull(),
+  adequateExplanation: text("adequate_explanation").notNull(),
+  comfortableTreatment: text("comfortable_treatment").notNull(),
+  costInformed: text("cost_informed").notNull(),
+  aftercareInstructions: text("aftercare_instructions").notNull(),
   comments: text("comments"),
   language: text("language").notNull(),
   createdAt: text("created_at").notNull(),
 });
 
 const ratingEnum = z.enum(['excellent', 'good', 'medium', 'weak']);
+const satisfactionEnum = z.enum(['very_satisfied', 'satisfied', 'neutral', 'dissatisfied']);
 
 export const insertFeedbackSchema = createInsertSchema(feedback)
   .extend({
@@ -31,6 +32,10 @@ export const insertFeedbackSchema = createInsertSchema(feedback)
     generalExperience: ratingEnum,
     bookingRating: ratingEnum,
     careQuality: ratingEnum,
+    adequateExplanation: satisfactionEnum,
+    comfortableTreatment: satisfactionEnum,
+    costInformed: satisfactionEnum,
+    aftercareInstructions: satisfactionEnum,
     comments: z.string().optional(),
     language: z.enum(['en', 'ar']),
     createdAt: z.string().default(() => new Date().toISOString()),

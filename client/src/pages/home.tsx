@@ -13,22 +13,91 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const EXAMINATION_TYPES = [
-  "X-ray image",
-  "Charge (Photoprotective/temporary)",
-  "Dislocation (normal/surgical)",
-  "Treatment of carrots",
-  "Pediatric treatment",
-  "Fixed installation",
-  "Mobile Installation"
-];
+const EXAMINATION_TYPES = {
+  en: [
+    "X-ray image",
+    "Charge (Photoprotective/temporary)",
+    "Dislocation (normal/surgical)",
+    "Treatment of carrots",
+    "Pediatric treatment",
+    "Fixed installation",
+    "Mobile Installation"
+  ],
+  ar: [
+    "صورة أشعة سينية",
+    "حشوة (وقائية/مؤقتة)",
+    "خلع (عادي/جراحي)",
+    "علاج عصب",
+    "علاج أطفال",
+    "تركيبات ثابتة",
+    "تركيبات متحركة"
+  ]
+};
 
-const RATING_OPTIONS = [
-  { value: "excellent", label: "Excellent" },
-  { value: "good", label: "Good" },
-  { value: "medium", label: "Medium" },
-  { value: "weak", label: "Weak" }
-];
+const RATING_OPTIONS = {
+  en: [
+    { value: "excellent", label: "Excellent" },
+    { value: "good", label: "Good" },
+    { value: "medium", label: "Medium" },
+    { value: "weak", label: "Weak" }
+  ],
+  ar: [
+    { value: "excellent", label: "ممتاز" },
+    { value: "good", label: "جيد" },
+    { value: "medium", label: "متوسط" },
+    { value: "weak", label: "ضعيف" }
+  ]
+};
+
+const SATISFACTION_OPTIONS = {
+  en: [
+    { value: "very_satisfied", label: "Very Satisfied" },
+    { value: "satisfied", label: "Satisfied" },
+    { value: "neutral", label: "Neutral" },
+    { value: "dissatisfied", label: "Dissatisfied" }
+  ],
+  ar: [
+    { value: "very_satisfied", label: "راضٍ جداً" },
+    { value: "satisfied", label: "راضٍ" },
+    { value: "neutral", label: "محايد" },
+    { value: "dissatisfied", label: "غير راضٍ" }
+  ]
+};
+
+const TRANSLATIONS = {
+  en: {
+    title: "NUSU Dental Clinic Feedback",
+    description: "Thank you for choosing our clinic for treatment. We appreciate your feedback as it helps us improve the quality of care we provide. Please take a few minutes to answer the following questions. Your remarks are confidential.",
+    examinationType: "Type of Examination (Select all that apply)",
+    generalExperience: "How would you rate your general experience in our clinic?",
+    bookingRating: "How do you rate the ease of booking and the waiting time before your appointment?",
+    careQuality: "How would you assess the quality of care you received during your treatment?",
+    adequateExplanation: "How satisfied are you with the doctor's explanation of the treatment procedures?",
+    comfortableTreatment: "How comfortable were you during the treatment?",
+    costInformed: "How satisfied are you with the cost information provided before the procedure?",
+    aftercareInstructions: "How clear were the aftercare instructions provided?",
+    comments: "Comments/suggestions/complaints",
+    commentsPlaceholder: "Please share your thoughts...",
+    submit: "Submit Feedback",
+    submitting: "Submitting..."
+  },
+  ar: {
+    title: "استبيان عيادة طب الأسنان - جامعة النيلين",
+    description: "شكراً لاختيارك عيادتنا للعلاج. نقدر ملاحظاتك لأنها تساعدنا في تحسين جودة الرعاية التي نقدمها. يرجى أخذ بضع دقائق للإجابة على الأسئلة التالية. ملاحظاتك سرية.",
+    examinationType: "نوع الفحص (يمكن اختيار أكثر من خيار)",
+    generalExperience: "كيف تقيم تجربتك العامة في عيادتنا؟",
+    bookingRating: "كيف تقيم سهولة الحجز ووقت الانتظار قبل موعدك؟",
+    careQuality: "كيف تقيم جودة الرعاية التي تلقيتها أثناء العلاج؟",
+    adequateExplanation: "ما مدى رضاك عن شرح الطبيب لإجراءات العلاج؟",
+    comfortableTreatment: "ما مدى راحتك أثناء العلاج؟",
+    costInformed: "ما مدى رضاك عن المعلومات المقدمة حول التكلفة قبل الإجراء؟",
+    aftercareInstructions: "ما مدى وضوح تعليمات الرعاية بعد العلاج؟",
+    comments: "التعليقات/الاقتراحات/الشكاوى",
+    commentsPlaceholder: "يرجى مشاركة أفكارك...",
+    submit: "إرسال التقييم",
+    submitting: "جاري الإرسال..."
+  }
+};
 
 export default function Home() {
   const [, navigate] = useLocation();
@@ -40,14 +109,17 @@ export default function Home() {
       generalExperience: undefined,
       bookingRating: undefined,
       careQuality: undefined,
-      adequateExplanation: false,
-      comfortableTreatment: false,
-      costInformed: false,
-      aftercareInstructions: false,
+      adequateExplanation: undefined,
+      comfortableTreatment: undefined,
+      costInformed: undefined,
+      aftercareInstructions: undefined,
       comments: "",
       language: "en"
     },
   });
+
+  const currentLanguage = form.watch("language") as "en" | "ar";
+  const t = TRANSLATIONS[currentLanguage];
 
   const mutation = useMutation({
     mutationFn: async (data: typeof form.getValues) => {
@@ -71,7 +143,7 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className={`min-h-screen bg-background p-6 ${currentLanguage === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className="max-w-2xl mx-auto">
         <div className="mb-6 flex justify-end">
           <FormField
@@ -94,12 +166,10 @@ export default function Home() {
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl font-bold text-primary text-center">
-              NUSU Dental Clinic Feedback
+              {t.title}
             </CardTitle>
             <CardDescription className="text-center mt-4">
-              Thank you for choosing our clinic for treatment. We appreciate your feedback as it helps us improve
-              the quality of care we provide. Please take a few minutes to answer the following questions.
-              Your remarks are confidential.
+              {t.description}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -110,20 +180,21 @@ export default function Home() {
                   name="examinationType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Type of Examination (Select all that apply)</FormLabel>
+                      <FormLabel>{t.examinationType}</FormLabel>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {EXAMINATION_TYPES.map((type) => (
+                        {EXAMINATION_TYPES[currentLanguage].map((type, index) => (
                           <div key={type} className="flex items-center space-x-2">
                             <Checkbox
-                              checked={field.value.includes(type)}
+                              checked={field.value.includes(EXAMINATION_TYPES.en[index])}
                               onCheckedChange={(checked) => {
+                                const engType = EXAMINATION_TYPES.en[index];
                                 const updatedTypes = checked
-                                  ? [...field.value, type]
-                                  : field.value.filter((t) => t !== type);
+                                  ? [...field.value, engType]
+                                  : field.value.filter((t) => t !== engType);
                                 field.onChange(updatedTypes);
                               }}
                             />
-                            <label className="text-sm">{type}</label>
+                            <label className="text-sm ms-2">{type}</label>
                           </div>
                         ))}
                       </div>
@@ -132,7 +203,7 @@ export default function Home() {
                   )}
                 />
 
-                {['generalExperience', 'bookingRating', 'careQuality'].map((fieldName, index) => (
+                {['generalExperience', 'bookingRating', 'careQuality'].map((fieldName) => (
                   <FormField
                     key={fieldName}
                     control={form.control}
@@ -140,21 +211,19 @@ export default function Home() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          {fieldName === 'generalExperience' && 'How would you rate your general experience in our clinic?'}
-                          {fieldName === 'bookingRating' && 'How do you rate the ease of booking and the waiting time before your appointment?'}
-                          {fieldName === 'careQuality' && 'How would you assess the quality of care you received during your treatment?'}
+                          {t[fieldName as keyof typeof t]}
                         </FormLabel>
                         <RadioGroup
                           onValueChange={field.onChange}
                           value={field.value}
                           className="grid grid-cols-2 md:grid-cols-4 gap-4"
                         >
-                          {RATING_OPTIONS.map((option) => (
+                          {RATING_OPTIONS[currentLanguage].map((option) => (
                             <FormItem key={option.value} className="flex items-center space-x-2">
                               <FormControl>
                                 <RadioGroupItem value={option.value} />
                               </FormControl>
-                              <FormLabel className="font-normal">{option.label}</FormLabel>
+                              <FormLabel className="font-normal ms-2">{option.label}</FormLabel>
                             </FormItem>
                           ))}
                         </RadioGroup>
@@ -164,25 +233,28 @@ export default function Home() {
                   />
                 ))}
 
-                {['adequateExplanation', 'comfortableTreatment', 'costInformed', 'aftercareInstructions'].map((fieldName, index) => (
+                {['adequateExplanation', 'comfortableTreatment', 'costInformed', 'aftercareInstructions'].map((fieldName) => (
                   <FormField
                     key={fieldName}
                     control={form.control}
                     name={fieldName as any}
                     render={({ field }) => (
-                      <FormItem className="flex items-start space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          {fieldName === 'adequateExplanation' && 'Did the doctor explain the treatment procedures adequately?'}
-                          {fieldName === 'comfortableTreatment' && 'Was the treatment comfortable and satisfactory?'}
-                          {fieldName === 'costInformed' && 'Have you been informed of the costs of treatment before the procedure begins?'}
-                          {fieldName === 'aftercareInstructions' && 'Have you been provided with clear instructions for care after treatment?'}
-                        </FormLabel>
+                      <FormItem>
+                        <FormLabel>{t[fieldName as keyof typeof t]}</FormLabel>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                        >
+                          {SATISFACTION_OPTIONS[currentLanguage].map((option) => (
+                            <FormItem key={option.value} className="flex items-center space-x-2">
+                              <FormControl>
+                                <RadioGroupItem value={option.value} />
+                              </FormControl>
+                              <FormLabel className="font-normal ms-2">{option.label}</FormLabel>
+                            </FormItem>
+                          ))}
+                        </RadioGroup>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -194,10 +266,10 @@ export default function Home() {
                   name="comments"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Comments/suggestions/complaints</FormLabel>
+                      <FormLabel>{t.comments}</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Please share your thoughts..."
+                          placeholder={t.commentsPlaceholder}
                           className="h-32"
                           {...field}
                         />
@@ -212,7 +284,7 @@ export default function Home() {
                   className="w-full"
                   disabled={mutation.isPending}
                 >
-                  {mutation.isPending ? "Submitting..." : "Submit Feedback"}
+                  {mutation.isPending ? t.submitting : t.submit}
                 </Button>
               </form>
             </Form>
