@@ -98,57 +98,14 @@ export class MemStorage implements IStorage {
     };
     this.feedbacks.set(id, feedback);
 
-    try {
-      // Generate charts
-      const { pieChartBuffer, barChartBuffer } = await this.generateCharts();
-
-      // Send email notification using Gmail
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'nusu.dental.feedback@gmail.com',
-          pass: process.env.GMAIL_APP_PASSWORD
-        }
-      });
-
-      const mailOptions = {
-        from: 'nusu.dental.feedback@gmail.com',
-        to: 'nusu.dental.feedback@gmail.com',
-        subject: 'New Dental Clinic Feedback',
-        html: `
-          <h2>New Feedback Received</h2>
-          <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
-          <p><strong>Language:</strong> ${feedback.language === 'en' ? 'English' : 'Arabic'}</p>
-          <p><strong>Examination Types:</strong> ${(feedback.examinationType as string[]).join(', ')}</p>
-          <p><strong>General Experience:</strong> ${feedback.generalExperience}</p>
-          <p><strong>Booking Rating:</strong> ${feedback.bookingRating}</p>
-          <p><strong>Care Quality:</strong> ${feedback.careQuality}</p>
-          <p><strong>Additional Information:</strong></p>
-          <ul>
-            <li>Doctor explained procedures: ${feedback.adequateExplanation ? 'Yes' : 'No'}</li>
-            <li>Treatment was comfortable: ${feedback.comfortableTreatment ? 'Yes' : 'No'}</li>
-            <li>Cost information provided: ${feedback.costInformed ? 'Yes' : 'No'}</li>
-            <li>Aftercare instructions given: ${feedback.aftercareInstructions ? 'Yes' : 'No'}</li>
-          </ul>
-          ${feedback.comments ? `<p><strong>Comments:</strong> ${feedback.comments}</p>` : ''}
-        `,
-        attachments: [
-          {
-            filename: 'general-experience.png',
-            content: pieChartBuffer
-          },
-          {
-            filename: 'examination-types.png',
-            content: barChartBuffer
-          }
-        ]
-      };
-
-      await transporter.sendMail(mailOptions);
-    } catch (error) {
-      console.error('Error sending email:', error);
-      // Still return the feedback even if email fails
-    }
+    // Log the feedback to console for verification
+    console.log('New feedback received:', {
+      id: feedback.id,
+      language: feedback.language,
+      examinationType: feedback.examinationType,
+      generalExperience: feedback.generalExperience,
+      createdAt: feedback.createdAt
+    });
 
     return feedback;
   }
